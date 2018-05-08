@@ -1,5 +1,5 @@
 import GoogleSpreadsheet from 'google-spreadsheet';
-import multipart from 'aws-lambda-multipart-parser';
+import { parse } from 'aws-lambda-multipart-parser';
 import creds from './client_secret.json';
 
 const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEETS_KEY);
@@ -48,12 +48,7 @@ export const rsvps = (event, context, cb) => {
   }
 
   if (event.httpMethod === 'POST') {
-    const data = JSON.parse(event.body);
-
-    response.body = JSON.stringify({
-      data,
-      event
-    });
+    response.body = JSON.stringify(parse(event, true));
 
     p.then(() => cb(null, response)).catch(err => cb(err));
   }
