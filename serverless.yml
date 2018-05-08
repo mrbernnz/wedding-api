@@ -18,3 +18,7 @@ functions:
           method: GET
           path: rsvps
           cors: true
+      - http:
+          method: POST
+          path: rsvps
+          cors: true

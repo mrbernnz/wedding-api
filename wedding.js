@@ -46,4 +46,15 @@ export const rsvps = (event, context, cb) => {
       })
       .catch(err => cb(err));
   }
+
+  if (event.httpMethod === 'POST') {
+    const data = JSON.parse(event.body);
+
+    response.body = JSON.stringify({
+      data,
+      event
+    });
+
+    p.then(() => cb(null, response)).catch(err => cb(err));
+  }
 };
