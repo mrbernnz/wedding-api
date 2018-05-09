@@ -29,16 +29,14 @@ export const rsvps = (event, context, cb) => {
               code: row.code,
               name: `${row.firstnames} ${row.lastname}`,
               party: row.weddingparty,
-              invitations: row.invitations,
-              rsvp: row.rsvpd
+              guests: row.guests
             }));
+
             const data = people.filter(
               person => event.queryStringParameters.code === person.code
             );
 
-            response.body = JSON.stringify({
-              data
-            });
+            response.body = JSON.stringify({ data });
 
             return cb(null, response);
           });
@@ -48,8 +46,31 @@ export const rsvps = (event, context, cb) => {
   }
 
   if (event.httpMethod === 'POST') {
-    response.body = JSON.stringify(parse(event, true));
+    p
+      .then(() =>
+        doc.useServiceAccountAuth(creds, docErr => {
+          if (docErr) return cb(docErr);
 
-    p.then(() => cb(null, response)).catch(err => cb(err));
+          return doc.getRows(1, (rowsErr, rows) => {
+            if (rowsErr) return cb(rowsErr);
+
+            const payload = parse(event, true);
+            rows.forEach(row => {
+              if (row.code === payload.code) {
+                row.rsvpd = payload.rsvp.toUpperCase();
+                row.guests = payload.guests;
+                row.entree = payload.entree1;
+                row.guestentree = payload.entree2;
+                row.save();
+              }
+            });
+
+            response.body = JSON.stringify({ message: 'SUCCESS' });
+
+            return cb(null, response);
+          });
+        })
+      )
+      .catch(err => cb(err));
   }
 };
