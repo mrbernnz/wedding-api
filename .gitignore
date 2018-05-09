@@ -7,3 +7,6 @@ jspm_packages
 
 # Webpack directories
 .webpack
+
+# Google Auth
+client_secret.json
