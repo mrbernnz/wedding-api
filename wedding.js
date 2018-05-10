@@ -29,7 +29,7 @@ export const rsvps = (event, context, cb) => {
               code: row.code,
               name: `${row.firstnames} ${row.lastname}`,
               party: row.weddingparty,
-              guests: row.guests
+              invited: row.invited
             }));
 
             const data = people.filter(
