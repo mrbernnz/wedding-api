@@ -1,5 +1,7 @@
 import GoogleSpreadsheet from 'google-spreadsheet';
 import { parse } from 'aws-lambda-multipart-parser';
+import axios from 'axios';
+
 import creds from './client_secret.json';
 
 const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEETS_KEY);
@@ -61,7 +63,31 @@ export const rsvps = (event, context, cb) => {
                 row.guests = payload.guests;
                 row.entree = payload.entree1;
                 row.guestentree = payload.entree2;
+                row.email = payload.email;
                 row.save();
+
+                const buffer = Buffer.from(
+                  `anystring:${process.env.MAILCHIMP_API_KEY}`
+                ).toString('base64');
+
+                axios({
+                  method: 'post',
+                  url: `https://us16.api.mailchimp.com/3.0/lists/${
+                    process.env.MAILCHIMP_LIST_ID
+                  }/members/`,
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Basic ${buffer}`
+                  },
+                  data: {
+                    email_address: payload.email,
+                    status: 'subscribed',
+                    merge_fields: {
+                      FNAME: row.firstnames,
+                      LNAME: row.lastname
+                    }
+                  }
+                })
               }
             });
 
