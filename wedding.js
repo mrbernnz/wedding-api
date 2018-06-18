@@ -61,8 +61,8 @@ export const rsvps = (event, context, cb) => {
               if (row.code === payload.code) {
                 row.rsvpd = payload.rsvp.toUpperCase();
                 row.guests = payload.guests;
-                row.entree = payload.entree1;
-                row.guestentree = payload.entree2;
+                row.guestone = payload.guestone;
+                row.guesttwo = payload.guesttwo;
                 row.email = payload.email;
                 row.save();
 
@@ -87,7 +87,7 @@ export const rsvps = (event, context, cb) => {
                       LNAME: row.lastname
                     }
                   }
-                })
+                });
               }
             });
 
